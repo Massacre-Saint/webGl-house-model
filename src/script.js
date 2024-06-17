@@ -120,11 +120,13 @@ function createHouseGroup() {
 
     // Loop through each bush data and create meshes
     for (let i = 0; i < bushData.length; i++) {
-        const { scale, position } = bushData[i];
+        const scale = bushData[i].scale;
+        const position = bushData[i].position;
 
-        const bushGeometry = new THREE.SphereGeometry(1, 16, 16);
-        const bushMaterial = new THREE.MeshStandardMaterial();
-        const bush = new THREE.Mesh(bushGeometry, bushMaterial);
+        const bush = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 16, 16), 
+            new THREE.MeshStandardMaterial(),
+        );
 
         bush.scale.set(scale, scale, scale);
         bush.position.set(position.x, position.y, position.z);
@@ -134,6 +136,43 @@ function createHouseGroup() {
 
     scene.add(house, bushes);
     house.add(walls, roof, door);
+}
+
+function createGraves() {
+    const graveParams = {
+        width: 0.6,
+        height: 0.8,
+        depth: 0.2,
+        innerRadius: 4,
+        outerRadius: 5,
+        tiltPower: 0.35
+    };
+    const graves = new THREE.Group();
+
+    for (let i = 0; i < 30; i++) {
+        const angle = Math.random() * radians.full;
+        const radius = graveParams.innerRadius + Math.random() * graveParams.outerRadius;
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+
+        const grave = new THREE.Mesh(
+            new THREE.BoxGeometry(
+                graveParams.width,
+                graveParams.height,
+                graveParams.depth
+            ),
+            new THREE.MeshStandardMaterial()
+        );
+        grave.position.set(x, Math.random() * 0.4, z);
+        grave.rotation.set(
+           (Math.random() - 0.5) * graveParams.tiltPower,
+           (Math.random() - 0.5) * graveParams.tiltPower,
+           (Math.random() - 0.5) * graveParams.tiltPower
+        );
+        
+        graves.add(grave);
+    };
+    scene.add(graves);
 }
 
 function createLighting() {
@@ -177,6 +216,7 @@ function init() {
     createScene();
     createGround();
     createHouseGroup();
+    createGraves();
     createLighting();
     createControls();
     animate();
