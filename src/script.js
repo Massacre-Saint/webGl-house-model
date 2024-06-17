@@ -7,6 +7,13 @@ let camera;
 let renderer;
 let scene;
 let controls;
+let groundParams;
+let wallsParams;
+let roofParams;
+let doorParams;
+let graveParams;
+const house = new THREE.Group();
+const bushes = new THREE.Group();
 
 const sizes = {
     width: window.innerWidth,
@@ -39,7 +46,7 @@ function createScene() {
 }
 
 function createGround() {
-    const groundParams = {
+    groundParams = {
         width: 20,
         height: 20
     };
@@ -53,27 +60,13 @@ function createGround() {
     scene.add(floor);
 }
 
-function createHouseGroup() {
-    const house = new THREE.Group();
-
-    const wallsParams = {
+function createWalls() {
+    wallsParams = {
         width: 4,
         height: 2.5,
         depth: 4 
         };
-
-    const roofParams = {
-        radius: 3.5,
-        height: 1.5,
-        sides: 4
-        };
-
-    const doorParams = {
-        width: 2.2,
-        height: 2.2
-        };
-
-    // Walls
+    
     const walls = new THREE.Mesh(
         new THREE.BoxGeometry(
             wallsParams.width,
@@ -85,8 +78,17 @@ function createHouseGroup() {
         
     walls.position.y = wallsParams.height / 2;
     
-    // Roof
-      const roof = new THREE.Mesh(
+    house.add(walls);
+}
+
+function createRoof() {
+    roofParams = {
+        radius: 3.5,
+        height: 1.5,
+        sides: 4
+        };
+    
+    const roof = new THREE.Mesh(
         new THREE.ConeGeometry(
             roofParams.radius,
             roofParams.height,
@@ -97,6 +99,15 @@ function createHouseGroup() {
 
     roof.position.y = wallsParams.height + (roofParams.height / 2);
     roof.rotation.y = radians.eighth;
+
+    house.add(roof);
+}
+
+function createDoor() {
+    doorParams = {
+        width: 2.2,
+        height: 2.2
+        };
     
     // Door    
     const door = new THREE.Mesh(
@@ -106,11 +117,10 @@ function createHouseGroup() {
 
     door.position.set(0, 1, 2.01);
 
-    // Bushes
-    const bushes = new THREE.Group();
-    // scene.add(bushes);
+    house.add(door);
+}
 
-    // Define the positions and scales for each bush
+function createBushes() {
     const bushData = [
         { scale: 0.5, position: { x: 0.8, y: 0.2, z: 2.2 } },
         { scale: 0.25, position: { x: 1.4, y: 0.1, z: 2.1 } },
@@ -132,14 +142,12 @@ function createHouseGroup() {
         bush.position.set(position.x, position.y, position.z);
 
         bushes.add(bush);
-    };
 
-    scene.add(house, bushes);
-    house.add(walls, roof, door);
+    };
 }
 
 function createGraves() {
-    const graveParams = {
+    graveParams = {
         width: 0.6,
         height: 0.8,
         depth: 0.2,
@@ -173,6 +181,16 @@ function createGraves() {
         graves.add(grave);
     };
     scene.add(graves);
+}
+
+function buildObjects() {
+    createGround();
+    createWalls();
+    createRoof();
+    createDoor();
+    createBushes();
+    createGraves();
+    scene.add(house, bushes);
 }
 
 function createLighting() {
@@ -214,9 +232,7 @@ function init() {
     canvas = document.createElement('canvas');
     document.body.appendChild(canvas);
     createScene();
-    createGround();
-    createHouseGroup();
-    createGraves();
+    buildObjects();
     createLighting();
     createControls();
     animate();
