@@ -155,13 +155,33 @@ function createRoof() {
         sides: 4
         };
     
+        const roofColorTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_diff_1k.jpg');
+        const roofARMTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_arm_1k.jpg');
+        const roofNormalTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_nor_gl_1k.jpg');
+        
+        roofColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+        roofColorTexture.repeat.set(3, 1);
+        roofARMTexture.repeat.set(3, 1);
+        roofNormalTexture.repeat.set(3, 1);
+
+        roofColorTexture.wrapS = THREE.RepeatWrapping;
+        roofARMTexture.wrapS = THREE.RepeatWrapping;
+        roofNormalTexture.wrapS = THREE.RepeatWrapping;
+
     const roof = new THREE.Mesh(
         new THREE.ConeGeometry(
             roofParams.radius,
             roofParams.height,
             roofParams.sides
         ),
-        new THREE.MeshStandardMaterial()
+        new THREE.MeshStandardMaterial({
+            map: roofColorTexture,
+            aoMap: roofARMTexture,
+            roughnessMap: roofARMTexture,
+            metalnessMap: roofARMTexture,
+            normalMap: roofNormalTexture
+        })
     );
 
     roof.position.y = wallsParams.height + (roofParams.height / 2);
@@ -194,7 +214,7 @@ function createBushes() {
         { scale: 0.4, position: { x: -0.8, y: 0.1, z: 2.2 } },
         { scale: 0.15, position: { x: -1, y: 0.05, z: 2.6 } }
     ];
-
+    
     // Loop through each bush data and create meshes
     for (let i = 0; i < bushData.length; i++) {
         const scale = bushData[i].scale;
